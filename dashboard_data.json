@@ -1,0 +1,300 @@
+{
+  "kpis": {
+    "total_bookings": 150000,
+    "completed_bookings": 93000,
+    "completion_rate": 62.0,
+    "cancelled_driver": 27000,
+    "cancelled_customer": 10500,
+    "no_driver_found": 10500,
+    "incomplete": 9000,
+    "total_booking_val": 51846183.0,
+    "avg_booking_val": 508.3,
+    "total_distance": 2512975.19,
+    "avg_distance": 24.64,
+    "avg_vtat": 8.46,
+    "avg_ctat": 29.15,
+    "avg_driver_rating": 4.23,
+    "avg_customer_rating": 4.4
+  },
+  "monthly": {
+    "months": [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
+    "bookings": [
+      12861,
+      11927,
+      12719,
+      12199,
+      12778,
+      12440,
+      12897,
+      12636,
+      12248,
+      12651,
+      12394,
+      12250
+    ],
+    "revenue": [
+      4411069.0,
+      4085790.0,
+      4568188.0,
+      4253789.0,
+      4320679.0,
+      4325660.0,
+      4365923.0,
+      4243509.0,
+      4191393.0,
+      4417170.0,
+      4343395.0,
+      4319618.0
+    ],
+    "distance": [
+      215305.01,
+      196795.13,
+      215283.59,
+      204990.8,
+      211541.32,
+      210558.17,
+      214994.88,
+      208668.35,
+      204064.89,
+      215364.34,
+      207921.71,
+      207487.0
+    ],
+    "completed": [
+      7951,
+      7368,
+      7954,
+      7632,
+      7905,
+      7757,
+      7926,
+      7780,
+      7542,
+      7905,
+      7659,
+      7621
+    ],
+    "cancelled": [
+      3217,
+      3028,
+      3146,
+      3000,
+      3236,
+      3089,
+      3264,
+      3185,
+      3059,
+      3118,
+      3084,
+      3074
+    ]
+  },
+  "status_counts": {
+    "Completed": 93000,
+    "Cancelled by Driver": 27000,
+    "No Driver Found": 10500,
+    "Cancelled by Customer": 10500,
+    "Incomplete": 9000
+  },
+  "vehicles": [
+    {
+      "vehicle": "Auto",
+      "bookings": 37419,
+      "revenue": 12878422.0,
+      "avg_value": 506.73,
+      "distance": 625615.53,
+      "avg_distance": 24.62,
+      "driver_rating": 4.23,
+      "customer_rating": 4.4,
+      "completed": 23155,
+      "cancelled_driver": 6643,
+      "cancelled_cust": 2680,
+      "incomplete": 2260,
+      "no_driver": 2681
+    },
+    {
+      "vehicle": "Bike",
+      "bookings": 22517,
+      "revenue": 7837697.0,
+      "avg_value": 510.2,
+      "distance": 378666.33,
+      "avg_distance": 24.65,
+      "driver_rating": 4.23,
+      "customer_rating": 4.4,
+      "completed": 14034,
+      "cancelled_driver": 4077,
+      "cancelled_cust": 1575,
+      "incomplete": 1328,
+      "no_driver": 1503
+    },
+    {
+      "vehicle": "Go Mini",
+      "bookings": 29806,
+      "revenue": 10338496.0,
+      "avg_value": 507.68,
+      "distance": 501200.6,
+      "avg_distance": 24.61,
+      "driver_rating": 4.23,
+      "customer_rating": 4.4,
+      "completed": 18549,
+      "cancelled_driver": 5330,
+      "cancelled_cust": 2097,
+      "incomplete": 1815,
+      "no_driver": 2015
+    },
+    {
+      "vehicle": "Go Sedan",
+      "bookings": 27141,
+      "revenue": 9369719.0,
+      "avg_value": 511.5,
+      "distance": 450793.61,
+      "avg_distance": 24.61,
+      "driver_rating": 4.23,
+      "customer_rating": 4.41,
+      "completed": 16676,
+      "cancelled_driver": 5031,
+      "cancelled_cust": 1832,
+      "incomplete": 1642,
+      "no_driver": 1960
+    },
+    {
+      "vehicle": "Premier Sedan",
+      "bookings": 18111,
+      "revenue": 6275332.0,
+      "avg_value": 509.57,
+      "distance": 302936.14,
+      "avg_distance": 24.6,
+      "driver_rating": 4.23,
+      "customer_rating": 4.4,
+      "completed": 11252,
+      "cancelled_driver": 3250,
+      "cancelled_cust": 1266,
+      "incomplete": 1063,
+      "no_driver": 1280
+    },
+    {
+      "vehicle": "Uber XL",
+      "bookings": 4449,
+      "revenue": 1528032.0,
+      "avg_value": 501.82,
+      "distance": 74306.81,
+      "avg_distance": 24.4,
+      "driver_rating": 4.24,
+      "customer_rating": 4.4,
+      "completed": 2783,
+      "cancelled_driver": 762,
+      "cancelled_cust": 327,
+      "incomplete": 262,
+      "no_driver": 315
+    },
+    {
+      "vehicle": "eBike",
+      "bookings": 10557,
+      "revenue": 3618485.0,
+      "avg_value": 503.9,
+      "distance": 179456.17,
+      "avg_distance": 24.99,
+      "driver_rating": 4.23,
+      "customer_rating": 4.4,
+      "completed": 6551,
+      "cancelled_driver": 1907,
+      "cancelled_cust": 723,
+      "incomplete": 630,
+      "no_driver": 746
+    }
+  ],
+  "payments": [
+    {
+      "method": "UPI",
+      "count": 45909,
+      "revenue": 23345101.0
+    },
+    {
+      "method": "Cash",
+      "count": 25367,
+      "revenue": 12895649.0
+    },
+    {
+      "method": "Uber Wallet",
+      "count": 12276,
+      "revenue": 6200898.0
+    },
+    {
+      "method": "Credit Card",
+      "count": 10209,
+      "revenue": 5224025.0
+    },
+    {
+      "method": "Debit Card",
+      "count": 8239,
+      "revenue": 4180510.0
+    }
+  ],
+  "cust_cancel": {
+    "Wrong Address": 2362,
+    "Change of plans": 2353,
+    "Driver is not moving towards pickup location": 2335,
+    "Driver asked to cancel": 2295,
+    "AC is not working": 1155
+  },
+  "driver_cancel": {
+    "Customer related issue": 6837,
+    "The customer was coughing/sick": 6751,
+    "Personal & Car related issues": 6726,
+    "More than permitted people in there": 6686
+  },
+  "incomplete_reasons": {
+    "Customer Demand": 3040,
+    "Vehicle Breakdown": 3012,
+    "Other Issue": 2948
+  },
+  "top_pickups": {
+    "Khandsa": 949,
+    "Barakhamba Road": 946,
+    "Saket": 931,
+    "Badarpur": 921,
+    "Pragati Maidan": 920,
+    "Madipur": 919,
+    "AIIMS": 918,
+    "Mehrauli": 915,
+    "Dwarka Sector 21": 914,
+    "Pataudi Chowk": 907
+  },
+  "top_drops": {
+    "Ashram": 936,
+    "Basai Dhankot": 917,
+    "Lok Kalyan Marg": 916,
+    "Narsinghpur": 913,
+    "Cyber Hub": 912,
+    "Kalkaji": 912,
+    "Kashmere Gate ISBT": 909,
+    "Udyog Vihar": 906,
+    "Lajpat Nagar": 904,
+    "Madipur": 902
+  },
+  "ratings_dist": {
+    "driver": {
+      "4.0": 62862,
+      "5.0": 23444,
+      "3.0": 6694
+    },
+    "customer": {
+      "4.0": 48160,
+      "5.0": 40655,
+      "3.0": 4185
+    }
+  }
+}

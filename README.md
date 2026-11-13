@@ -1,6 +1,16 @@
 # 🚖 Taxi & Ride-Booking Operational & Revenue Analysis
 
-An end-to-end data analysis and Business Intelligence project exploring **150,000+ ride booking transactions (2024)**. This project investigates key operational metrics, booking status distributions, cancellation root causes, revenue generation across vehicle types, and customer satisfaction ratings using Power BI and data analytics techniques.
+An end-to-end data analytics and Business Intelligence project exploring **150,000+ ride booking transactions (2024)**. This project investigates key operational metrics, booking status distributions, cancellation root causes, revenue generation across vehicle types, and customer satisfaction ratings using Power BI and a clean, interactive modern Web Dashboard UI.
+
+---
+
+## 🌟 Interactive Web Dashboard (`index.html`)
+
+An interactive, responsive operational dashboard is built directly into the repository for live browser exploration:
+- **Real-Time KPIs**: Total Bookings (150K), Success Completion Rate (62%), Gross Revenue (₹51.85M), Turnaround Times (VTAT 8.46m / CTAT 29.15m), and Dual 5-Star Ratings.
+- **Dynamic Charting**: Monthly demand trends, booking status pie charts, revenue by vehicle type, payment mode breakdowns, and driver/customer cancellation root-cause charts.
+- **Interactive Vehicle Fleet Matrix**: Full breakdown of 7 service tiers (Auto, Go Mini, Go Sedan, Bike, Premier Sedan, eBike, Uber XL).
+- **Zero Server Setup**: Open `index.html` directly in any web browser or host on GitHub Pages.
 
 ---
 
@@ -50,20 +60,15 @@ Urban ride-hailing services experience fluctuating demands, cancellation challen
 
 ## 📈 Power BI Dashboard (`yt.pbix`)
 
-The included **Power BI Report (`Riding Analysis/yt.pbix`)** features interactive dashboards designed for operational and executive review:
+The included **Power BI Report (`Riding Analysis/yt.pbix`)** features multi-page analytical views:
 
-1. **Executive Overview**:
-   - Total Bookings, Completed Rides, Completion Rate (%), Total Revenue, and Average Distance.
-   - Slicers for Time Range, Vehicle Type, and Locations.
-2. **Booking & Cancellation Diagnostics**:
-   - Status split: Completed vs. Driver Cancelled vs. Customer Cancelled vs. No Driver Found vs. Incomplete.
-   - Root-cause breakdown charts for customer and driver cancellation reasons.
-3. **Revenue & Payment Dynamics**:
-   - Revenue contributions by vehicle tier (`Auto`, `Go Mini`, `Go Sedan`, `Premier Sedan`, `Bike`, etc.).
-   - Share of payment channels (dominance of UPI and Cash).
-4. **Ratings & Operational Latency**:
-   - Correlation between VTAT/CTAT and overall customer ratings.
-   - Vehicle-level and zone-level satisfaction benchmark.
+1. **Homepage**: Clean entry screen (background image display scaled to `Fit` to prevent cropping errors).
+2. **Overall View**: Executive KPIs, monthly trip trajectories, and completion distribution.
+3. **Vehicle Type**: Deep-dive comparisons across all 7 vehicle tiers for volume, revenue, and trip distances.
+4. **Revenue & Payments**: Payment mode distribution (UPI, Cash, Wallets, Cards) and daily revenue trajectories.
+5. **Cancellation Analysis**: Driver reasons, customer triggers, and incomplete ride breakdowns.
+6. **Ratings & Turnaround (VTAT / CTAT)**: Cross-functional satisfaction correlations with operational latency.
+7. **Executive Summary**: High-level scorecards for quick decision making.
 
 ---
 
@@ -73,6 +78,8 @@ The included **Power BI Report (`Riding Analysis/yt.pbix`)** features interactiv
 Taxi-analysis/
 ├── .gitignore                      # Ignored files and patterns
 ├── README.md                       # Comprehensive project documentation
+├── index.html                      # Interactive web dashboard UI (Tailwind + Chart.js)
+├── dashboard_data.json             # Pre-aggregated operational metrics for the web UI
 └── Riding Analysis/
     ├── rideBookings.csv            # 150K records transactional dataset (~25.5 MB)
     └── yt.pbix                     # Power BI interactive reporting file (~11.1 MB)
@@ -82,30 +89,19 @@ Taxi-analysis/
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- [Power BI Desktop](https://powerbi.microsoft.com/desktop/) (to view and interact with the `.pbix` dashboard)
-- Optional: Python 3.8+ (with `pandas`, `numpy`, `matplotlib`, `seaborn`) or SQL for exploratory querying
+### 1. View Interactive Web Dashboard
+Simply open `index.html` in your favorite web browser (Chrome, Edge, Firefox, Safari):
+```bash
+# Windows
+start index.html
 
-### Running Locally
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/yeulsanket/Taxi-analysis.git
-   cd Taxi-analysis
-   ```
+# Mac / Linux
+open index.html
+```
 
-2. **Open the Power BI Dashboard**:
-   - Double-click `Riding Analysis/yt.pbix` to launch the dashboard in Power BI Desktop.
-   - If prompted, refresh the data source to point to `Riding Analysis/rideBookings.csv`.
-
-3. **Data Exploration (Python snippet)**:
-   ```python
-   import pandas as pd
-
-   # Load dataset
-   df = pd.read_csv("Riding Analysis/rideBookings.csv")
-   print(df.info())
-   print(df['Booking Status'].value_counts())
-   ```
+### 2. View Power BI Dashboard
+- Open `Riding Analysis/yt.pbix` in [Power BI Desktop](https://powerbi.microsoft.com/desktop/).
+- Click Refresh to load data from `Riding Analysis/rideBookings.csv` if modifying queries.
 
 ---
 
@@ -114,7 +110,7 @@ Taxi-analysis/
 1. **Digital Payments Dominance**:
    - UPI accounts for the highest transaction share, followed by Cash. Promotional discounts or cashback incentives tied to digital payments can further minimize cash handling.
 2. **Addressing Cancellation Bottlenecks**:
-   - Significant ride failure occurs under "Cancelled by Driver" and "No Driver Found". Improving driver dispatch algorithms and driver acceptance incentives in peak zones can drastically reduce unfulfilled demand.
+   - Significant ride failure occurs under "Cancelled by Driver" (18%) and "No Driver Found" (7%). Improving driver dispatch algorithms and driver acceptance incentives in peak zones can drastically reduce unfulfilled demand.
 3. **Turnaround Optimization**:
    - Lower VTAT and CTAT correlate strongly with higher customer ratings (4.5+). Improving ETA prediction accuracy and pickup hotspot mapping can improve retention.
 
@@ -129,3 +125,4 @@ Taxi-analysis/
 ## 📄 License
 
 This repository is distributed under the [MIT License](https://opensource.org/licenses/MIT).
+

@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🚖 Taxi & Ride-Booking Operational & Revenue Analytics</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+            },
+            dark: {
+              900: '#0f172a',
+              800: '#1e293b',
+              700: '#334155',
+              600: '#475569'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-amber-500 selection:text-black">
+
+  <!-- TOP NAVIGATION HEADER -->
+  <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-6 py-3.5 flex items-center justify-between shadow-lg">
+    <div class="flex items-center space-x-3.5">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-slate-950 font-black shadow-md shadow-amber-500/20">
+        <i data-lucide="car-taxi-front" class="w-6 h-6"></i>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+          Taxi & Ride Operations Analytics
+          <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">150K Bookings</span>
+        </h1>
+        <p class="text-xs text-slate-400">Executive Performance, Turnaround, & Cancellation Diagnostics</p>
+      </div>
+    </div>
+
+    <!-- TAB BUTTONS -->
+    <nav class="hidden md:flex items-center bg-slate-950/70 p-1 rounded-xl border border-slate-800 text-sm font-medium">
+      <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn px-4 py-1.5 rounded-lg text-white bg-amber-500/20 text-amber-300 transition-all flex items-center gap-2">
+        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Overview
+      </button>
+      <button onclick="switchTab('vehicles')" id="tab-vehicles" class="tab-btn px-4 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-2">
+        <i data-lucide="car" class="w-4 h-4"></i> Vehicle Fleet
+      </button>
+      <button onclick="switchTab('revenue')" id="tab-revenue" class="tab-btn px-4 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-2">
+        <i data-lucide="wallet" class="w-4 h-4"></i> Revenue & Payment
+      </button>
+      <button onclick="switchTab('cancellations')" id="tab-cancellations" class="tab-btn px-4 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-2">
+        <i data-lucide="alert-triangle" class="w-4 h-4"></i> Cancellations
+      </button>
+      <button onclick="switchTab('ratings')" id="tab-ratings" class="tab-btn px-4 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-2">
+        <i data-lucide="star" class="w-4 h-4"></i> Ratings & Service
+      </button>
+    </nav>
+
+    <!-- RIGHT ACTION LINKS -->
+    <div class="flex items-center space-x-3">
+      <a href="https://github.com/yeulsanket/Taxi-analysis" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 flex items-center gap-2 transition-all shadow-sm">
+        <i data-lucide="github" class="w-4 h-4"></i> GitHub Repo
+      </a>
+      <a href="Riding%20Analysis/yt.pbix" download class="px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 font-bold text-xs rounded-lg flex items-center gap-2 transition-all shadow-md shadow-amber-500/20">
+        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Download Power BI (.pbix)
+      </a>
+    </div>
+  </header>
+
+  <!-- MOBILE NAV BUTTONS -->
+  <div class="md:hidden flex overflow-x-auto bg-slate-900 border-b border-slate-800 p-2 gap-2 text-xs font-medium">
+    <button onclick="switchTab('overview')" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 whitespace-nowrap">Overview</button>
+    <button onclick="switchTab('vehicles')" class="px-3 py-1.5 rounded-lg text-slate-300 hover:bg-slate-800 whitespace-nowrap">Vehicles</button>
+    <button onclick="switchTab('revenue')" class="px-3 py-1.5 rounded-lg text-slate-300 hover:bg-slate-800 whitespace-nowrap">Revenue</button>
+    <button onclick="switchTab('cancellations')" class="px-3 py-1.5 rounded-lg text-slate-300 hover:bg-slate-800 whitespace-nowrap">Cancellations</button>
+    <button onclick="switchTab('ratings')" class="px-3 py-1.5 rounded-lg text-slate-300 hover:bg-slate-800 whitespace-nowrap">Ratings</button>
+  </div>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
+
+    <!-- TOP KPI SUMMARY ROW -->
+    <section class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3.5">
+      <!-- Total Bookings -->
+      <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-slate-700 transition shadow">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs font-medium">Total Bookings</span>
+          <i data-lucide="layers" class="w-4 h-4 text-blue-400"></i>
+        </div>
+        <div class="text-2xl font-black text-white" id="kpi-total-bookings">150,000</div>
+        <div class="text-[11px] text-slate-400 mt-1">Full year 2024 records</div>
+      </div>
+
+      <!-- Completed Rides -->
+      <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-slate-700 transition shadow">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs font-medium">Completed Rides</span>
+          <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+        </div>
+        <div class="text-2xl font-black text-emerald-400" id="kpi-completed-bookings">93,000</div>
+        <div class="text-[11px] text-emerald-500/90 font-semibold mt-1">62.0% Success Rate</div>
+      </div>
+
+      <!-- Total Revenue -->
+      <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-slate-700 transition shadow">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs font-medium">Total Revenue</span>
+          <i data-lucide="indian-rupee" class="w-4 h-4 text-amber-400"></i>
+        </div>
+        <div class="text-2xl font-black text-amber-400" id="kpi-total-revenue">₹51.85M</div>
+        <div class="text-[11px] text-slate-400 mt-1">Avg ₹508.30 / ride</div>
+      </div>
+
+      <!-- Total Distance -->
+      <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-slate-700 transition shadow">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs font-medium">Distance Travelled</span>
+          <i data-lucide="map-pin" class="w-4 h-4 text-purple-400"></i>
+        </div>
+        <div class="text-2xl font-black text-purple-400" id="kpi-total-distance">2.51M km</div>
+        <div class="text-[11px] text-slate-400 mt-1">Avg 24.64 km / ride</div>
+      </div>
+
+      <!-- Turnaround Times (VTAT / CTAT) -->
+      <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-slate-700 transition shadow">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs font-medium">Avg VTAT / CTAT</span>
+          <i data-lucide="clock" class="w-4 h-4 text-cyan-400"></i>
+        </div>
+        <div class="text-xl font-black text-cyan-400">8.46m / 29.15m</div>
+        <div class="text-[11px] text-slate-400 mt-1">Vehicle / Customer TAT</div>
+      </div>
+
+      <!-- Ratings -->
+      <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between hover:border-slate-700 transition shadow">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs font-medium">Average Ratings</span>
+          <i data-lucide="star" class="w-4 h-4 text-yellow-400"></i>
+        </div>
+        <div class="text-xl font-black text-yellow-400 flex items-center gap-1">
+          4.40 <span class="text-xs font-normal text-slate-400">cust</span> / 4.23 <span class="text-xs font-normal text-slate-400">drv</span>
+        </div>
+        <div class="text-[11px] text-emerald-400 font-semibold mt-1">Dual 5-Star Feedback</div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 1: OVERVIEW ==================== -->
+    <div id="content-overview" class="tab-content space-y-6">
+      
+      <!-- Interactive Filter Controls -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-2">
+          <i data-lucide="filter" class="w-4 h-4 text-amber-400"></i>
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Dashboard View Controls:</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="flex items-center gap-2">
+            <label class="text-xs text-slate-400 font-medium">Vehicle Filter:</label>
+            <select id="vehicle-filter" onchange="applyOverviewFilter()" class="bg-slate-800 border border-slate-700 text-xs rounded-lg px-3 py-1.5 text-white focus:outline-none focus:ring-1 focus:ring-amber-500">
+              <option value="ALL">All Vehicle Types (7)</option>
+              <option value="Auto">Auto (37,419)</option>
+              <option value="Go Mini">Go Mini (29,806)</option>
+              <option value="Go Sedan">Go Sedan (27,141)</option>
+              <option value="Bike">Bike (22,517)</option>
+              <option value="Premier Sedan">Premier Sedan (18,111)</option>
+              <option value="eBike">eBike (10,557)</option>
+              <option value="Uber XL">Uber XL (4,449)</option>
+            </select>
+          </div>
+          <button onclick="resetOverviewFilter()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 rounded-lg border border-slate-700 transition">
+            Reset Filters
+          </button>
+        </div>
+      </div>
+
+      <!-- Charts Row 1: Monthly Booking & Revenue Trends -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Monthly Bookings Trend (2 Cols) -->
+        <div class="lg:col-span-2 bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="trending-up" class="w-4 h-4 text-blue-400"></i>
+                Monthly Booking Volume & Completion Trends
+              </h3>
+              <p class="text-xs text-slate-400">Total Bookings vs. Successfully Completed Trips Across 2024</p>
+            </div>
+            <span class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 font-medium">12 Months</span>
+          </div>
+          <div class="relative flex-1 min-h-[300px]">
+            <canvas id="monthlyTrendChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Booking Status Split (1 Col) -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="pie-chart" class="w-4 h-4 text-amber-400"></i>
+                Booking Status Breakdown
+              </h3>
+              <p class="text-xs text-slate-400">150,000 Total Ride Requests</p>
+            </div>
+          </div>
+          <div class="relative flex-1 min-h-[260px] flex items-center justify-center">
+            <canvas id="statusPieChart"></canvas>
+          </div>
+          <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
+            <div class="p-2 bg-slate-800/60 rounded-lg border border-slate-800">
+              <span class="text-emerald-400 font-bold">62.0%</span> Completed
+            </div>
+            <div class="p-2 bg-slate-800/60 rounded-lg border border-slate-800">
+              <span class="text-rose-400 font-bold">18.0%</span> Cancelled Driver
+            </div>
+            <div class="p-2 bg-slate-800/60 rounded-lg border border-slate-800">
+              <span class="text-amber-400 font-bold">7.0%</span> Cancelled Customer
+            </div>
+            <div class="p-2 bg-slate-800/60 rounded-lg border border-slate-800">
+              <span class="text-purple-400 font-bold">7.0%</span> No Driver Found
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Charts Row 2: Revenue By Vehicle & Distance vs Value -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Revenue by Vehicle Type -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="bar-chart-3" class="w-4 h-4 text-amber-400"></i>
+                Gross Revenue by Vehicle Category
+              </h3>
+              <p class="text-xs text-slate-400">Total ₹51.85 Million Generated</p>
+            </div>
+          </div>
+          <div class="relative min-h-[280px]">
+            <canvas id="vehicleRevenueChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Monthly Revenue & Trip Distance -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="activity" class="w-4 h-4 text-emerald-400"></i>
+                Monthly Gross Revenue (INR)
+              </h3>
+              <p class="text-xs text-slate-400">Seasonal Revenue Dynamics Across 2024</p>
+            </div>
+          </div>
+          <div class="relative min-h-[280px]">
+            <canvas id="monthlyRevenueChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ==================== TAB 2: VEHICLE FLEET ==================== -->
+    <div id="content-vehicles" class="tab-content hidden space-y-6">
+      
+      <!-- Vehicle Matrix Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="vehicle-matrix-cards">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Detailed Vehicle Fleet Table -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg">
+        <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+          <i data-lucide="table" class="w-4 h-4 text-amber-400"></i>
+          Complete Vehicle Fleet Performance & Service Metrics
+        </h3>
+        <p class="text-xs text-slate-400 mb-4">Aggregated from 150,000 transactions across Auto, Sedan, Bike, and EV tiers</p>
+
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-800/80 text-slate-300 font-semibold uppercase tracking-wider border-b border-slate-700">
+                <th class="p-3">Vehicle Tier</th>
+                <th class="p-3 text-right">Total Bookings</th>
+                <th class="p-3 text-right">Completion Rate</th>
+                <th class="p-3 text-right">Gross Revenue</th>
+                <th class="p-3 text-right">Avg Fare</th>
+                <th class="p-3 text-right">Total Distance</th>
+                <th class="p-3 text-right">Avg Distance</th>
+                <th class="p-3 text-center">Cust Rating</th>
+                <th class="p-3 text-center">Driver Rating</th>
+              </tr>
+            </thead>
+            <tbody id="vehicle-table-body" class="divide-y divide-slate-800/60">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==================== TAB 3: REVENUE & PAYMENT ==================== -->
+    <div id="content-revenue" class="tab-content hidden space-y-6">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Payment Mode Revenue Doughnut -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="credit-card" class="w-4 h-4 text-emerald-400"></i>
+            Revenue Share by Payment Method
+          </h3>
+          <p class="text-xs text-slate-400 mb-4">Dominance of UPI and Cash in Urban Cab Transactions</p>
+          <div class="relative min-h-[260px] flex items-center justify-center">
+            <canvas id="paymentPieChart"></canvas>
+          </div>
+          <div id="payment-legend" class="mt-4 space-y-2 text-xs">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Payment Mode Value Distribution Bar -->
+        <div class="lg:col-span-2 bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="layers" class="w-4 h-4 text-amber-400"></i>
+            Total Transaction Volume vs. Revenue by Mode
+          </h3>
+          <p class="text-xs text-slate-400 mb-4">Breakdown comparing booking volume and total revenue collected</p>
+          <div class="relative min-h-[320px]">
+            <canvas id="paymentComparisonChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- High-Frequency Pickup & Drop Zones -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg">
+          <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+            <i data-lucide="map-pin" class="w-4 h-4 text-blue-400"></i>
+            Top 10 High-Demand Pickup Hubs
+          </h3>
+          <div id="pickup-hubs-list" class="space-y-2 text-xs">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg">
+          <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+            <i data-lucide="navigation" class="w-4 h-4 text-purple-400"></i>
+            Top 10 High-Frequency Drop Destinations
+          </h3>
+          <div id="drop-hubs-list" class="space-y-2 text-xs">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==================== TAB 4: CANCELLATIONS ==================== -->
+    <div id="content-cancellations" class="tab-content hidden space-y-6">
+      
+      <!-- Key Cancellation Stat Callouts -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-rose-950/30 border border-rose-900/40 p-4 rounded-2xl">
+          <div class="text-xs text-rose-400 font-semibold mb-1">Driver Cancellations</div>
+          <div class="text-2xl font-black text-rose-400">27,000 (18.0%)</div>
+          <p class="text-xs text-slate-400 mt-1">Largest single contributor to failed bookings</p>
+        </div>
+        <div class="bg-amber-950/30 border border-amber-900/40 p-4 rounded-2xl">
+          <div class="text-xs text-amber-400 font-semibold mb-1">Customer Cancellations</div>
+          <div class="text-2xl font-black text-amber-400">10,500 (7.0%)</div>
+          <p class="text-xs text-slate-400 mt-1">Primarily due to wait times and incorrect pickup pins</p>
+        </div>
+        <div class="bg-purple-950/30 border border-purple-900/40 p-4 rounded-2xl">
+          <div class="text-xs text-purple-400 font-semibold mb-1">No Driver Found & Incomplete</div>
+          <div class="text-2xl font-black text-purple-400">19,500 (13.0%)</div>
+          <p class="text-xs text-slate-400 mt-1">10,500 unmet supply + 9,000 mid-trip vehicle breakdowns</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Driver Reasons Chart -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="user-x" class="w-4 h-4 text-rose-400"></i>
+            Driver Cancellation Root Causes (27,000 Trips)
+          </h3>
+          <p class="text-xs text-slate-400 mb-4">Breakdown of reported driver cancellation reasons</p>
+          <div class="relative min-h-[280px]">
+            <canvas id="driverCancelChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Customer Reasons Chart -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="user-minus" class="w-4 h-4 text-amber-400"></i>
+            Customer Cancellation Factors (10,500 Trips)
+          </h3>
+          <p class="text-xs text-slate-400 mb-4">Customer triggers causing trip dropouts</p>
+          <div class="relative min-h-[280px]">
+            <canvas id="custCancelChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==================== TAB 5: RATINGS & QUALITY ==================== -->
+    <div id="content-ratings" class="tab-content hidden space-y-6">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Ratings Distribution Chart -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg">
+          <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+            <i data-lucide="star-half" class="w-4 h-4 text-yellow-400"></i>
+            Customer vs. Driver Rating Distribution
+          </h3>
+          <p class="text-xs text-slate-400 mb-4">Frequency of 1 to 5-star ratings across completed trips</p>
+          <div class="relative min-h-[280px]">
+            <canvas id="ratingsDistChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Service Quality & Latency Summary -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
+              <i data-lucide="award" class="w-4 h-4 text-emerald-400"></i>
+              Turnaround Time & Operational Benchmarks
+            </h3>
+            <p class="text-xs text-slate-400 mb-4">VTAT and CTAT analysis against customer satisfaction</p>
+
+            <div class="space-y-4">
+              <div class="p-3.5 bg-slate-800/60 rounded-xl border border-slate-800">
+                <div class="flex justify-between items-center text-xs mb-1">
+                  <span class="text-slate-300 font-semibold">Average VTAT (Vehicle Turnaround Time)</span>
+                  <span class="text-cyan-400 font-bold">8.46 minutes</span>
+                </div>
+                <div class="w-full bg-slate-700/60 h-2 rounded-full overflow-hidden">
+                  <div class="bg-cyan-400 h-2 rounded-full" style="width: 42%"></div>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1.5">Measures dispatch-to-pickup arrival duration. Target is &lt; 10 min.</p>
+              </div>
+
+              <div class="p-3.5 bg-slate-800/60 rounded-xl border border-slate-800">
+                <div class="flex justify-between items-center text-xs mb-1">
+                  <span class="text-slate-300 font-semibold">Average CTAT (Customer Turnaround Time)</span>
+                  <span class="text-amber-400 font-bold">29.15 minutes</span>
+                </div>
+                <div class="w-full bg-slate-700/60 h-2 rounded-full overflow-hidden">
+                  <div class="bg-amber-400 h-2 rounded-full" style="width: 58%"></div>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1.5">Total duration from booking request through trip conclusion.</p>
+              </div>
+
+              <div class="p-3.5 bg-slate-800/60 rounded-xl border border-slate-800">
+                <div class="flex justify-between items-center text-xs mb-1">
+                  <span class="text-slate-300 font-semibold">Customer Retention & Quality Score</span>
+                  <span class="text-emerald-400 font-bold">88.4 / 100</span>
+                </div>
+                <div class="w-full bg-slate-700/60 h-2 rounded-full overflow-hidden">
+                  <div class="bg-emerald-400 h-2 rounded-full" style="width: 88.4%"></div>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1.5">Composite index combining rating consistency and turnaround speed.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-900 border-t border-slate-800 py-4 px-6 text-center text-xs text-slate-400">
+    <p>Taxi & Ride-Booking Operational & Revenue Analytics Dashboard &bull; Analyzed from 150,000 Booking Transactions (2024)</p>
+  </footer>
+
+  <!-- SCRIPT -->
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    let dashboardData = null;
+    let charts = {};
+
+    // Switch Tabs
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-amber-500/20', 'text-amber-300');
+        btn.classList.add('text-slate-400');
+      });
+
+      const activeContent = document.getElementById('content-' + tabId);
+      if (activeContent) activeContent.classList.remove('hidden');
+
+      const activeBtn = document.getElementById('tab-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-amber-500/20', 'text-amber-300');
+        activeBtn.classList.remove('text-slate-400');
+      }
+
+      // Re-trigger chart resize
+      setTimeout(() => {
+        Object.values(charts).forEach(c => c && c.resize && c.resize());
+      }, 50);
+    }
+
+    // Load data
+    fetch('dashboard_data.json')
+      .then(res => res.json())
+      .then(data => {
+        dashboardData = data;
+        renderOverviewCharts(data);
+        renderVehicles(data);
+        renderRevenue(data);
+        renderCancellations(data);
+        renderRatings(data);
+      })
+      .catch(err => {
+        console.error('Failed to load dashboard_data.json:', err);
+      });
+
+    // Render Overview Charts
+    function renderOverviewCharts(data) {
+      // Monthly Trend Chart
+      const ctxMonthly = document.getElementById('monthlyTrendChart').getContext('2d');
+      charts.monthly = new Chart(ctxMonthly, {
+        type: 'line',
+        data: {
+          labels: data.monthly.months,
+          datasets: [
+            {
+              label: 'Total Bookings',
+              data: data.monthly.bookings,
+              borderColor: '#3b82f6',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              fill: true,
+              tension: 0.35,
+              borderWidth: 2.5,
+              pointBackgroundColor: '#3b82f6',
+              pointRadius: 4
+            },
+            {
+              label: 'Completed Rides',
+              data: data.monthly.completed,
+              borderColor: '#10b981',
+              backgroundColor: 'transparent',
+              tension: 0.35,
+              borderWidth: 2.5,
+              pointBackgroundColor: '#10b981',
+              pointRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 12 } }
+            }
+          },
+          scales: {
+            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+            y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } }
+          }
+        }
+      });
+
+      // Status Pie Chart
+      const ctxStatus = document.getElementById('statusPieChart').getContext('2d');
+      charts.status = new Chart(ctxStatus, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(data.status_counts),
+          datasets: [{
+            data: Object.values(data.status_counts),
+            backgroundColor: [
+              '#10b981', // Completed
+              '#f43f5e', // Cancelled by Driver
+              '#8b5cf6', // No Driver Found
+              '#f59e0b', // Cancelled by Customer
+              '#64748b'  // Incomplete
+            ],
+            borderColor: '#0f172a',
+            borderWidth: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '68%',
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+
+      // Vehicle Revenue Bar Chart
+      const ctxVehRev = document.getElementById('vehicleRevenueChart').getContext('2d');
+      charts.vehRev = new Chart(ctxVehRev, {
+        type: 'bar',
+        data: {
+          labels: data.vehicles.map(v => v.vehicle),
+          datasets: [{
+            label: 'Revenue (₹)',
+            data: data.vehicles.map(v => v.revenue),
+            backgroundColor: '#f59e0b',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+            y: { 
+              grid: { color: '#1e293b' }, 
+              ticks: { 
+                color: '#94a3b8',
+                callback: v => '₹' + (v / 1e6).toFixed(1) + 'M'
+              } 
+            }
+          }
+        }
+      });
+
+      // Monthly Revenue Bar Chart
+      const ctxMonthRev = document.getElementById('monthlyRevenueChart').getContext('2d');
+      charts.monthRev = new Chart(ctxMonthRev, {
+        type: 'bar',
+        data: {
+          labels: data.monthly.months,
+          datasets: [{
+            label: 'Gross Revenue (₹)',
+            data: data.monthly.revenue,
+            backgroundColor: '#10b981',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+            y: { 
+              grid: { color: '#1e293b' }, 
+              ticks: { 
+                color: '#94a3b8',
+                callback: v => '₹' + (v / 1e6).toFixed(1) + 'M'
+              } 
+            }
+          }
+        }
+      });
+    }
+
+    // Render Vehicles Section
+    function renderVehicles(data) {
+      const container = document.getElementById('vehicle-matrix-cards');
+      const tableBody = document.getElementById('vehicle-table-body');
+      container.innerHTML = '';
+      tableBody.innerHTML = '';
+
+      data.vehicles.forEach(v => {
+        const compRate = ((v.completed / v.bookings) * 100).toFixed(1);
+        
+        // Card
+        const card = document.createElement('div');
+        card.className = 'bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-sm hover:border-slate-700 transition flex flex-col justify-between';
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-bold text-white">${v.vehicle}</span>
+            <span class="text-xs px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 font-semibold border border-amber-500/20">${compRate}% comp</span>
+          </div>
+          <div class="space-y-1.5 text-xs text-slate-300">
+            <div class="flex justify-between"><span class="text-slate-400">Bookings:</span> <span class="font-bold text-white">${v.bookings.toLocaleString()}</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Revenue:</span> <span class="font-bold text-amber-400">₹${(v.revenue / 1e6).toFixed(2)}M</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Avg Trip Dist:</span> <span>${v.avg_distance} km</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Cust / Drv Rating:</span> <span class="text-yellow-400">${v.customer_rating} / ${v.driver_rating}</span></div>
+          </div>
+        `;
+        container.appendChild(card);
+
+        // Table Row
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-800/40 transition text-slate-200';
+        tr.innerHTML = `
+          <td class="p-3 font-bold text-white flex items-center gap-2">${v.vehicle}</td>
+          <td class="p-3 text-right font-medium">${v.bookings.toLocaleString()}</td>
+          <td class="p-3 text-right text-emerald-400 font-bold">${compRate}%</td>
+          <td class="p-3 text-right font-bold text-amber-400">₹${(v.revenue / 1e6).toFixed(2)}M</td>
+          <td class="p-3 text-right">₹${v.avg_value}</td>
+          <td class="p-3 text-right font-medium">${(v.distance / 1e3).toFixed(1)}K km</td>
+          <td class="p-3 text-right">${v.avg_distance} km</td>
+          <td class="p-3 text-center text-yellow-400 font-bold">${v.customer_rating} ★</td>
+          <td class="p-3 text-center text-yellow-400 font-bold">${v.driver_rating} ★</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    // Render Revenue Section
+    function renderRevenue(data) {
+      // Payment Pie
+      const ctxPayPie = document.getElementById('paymentPieChart').getContext('2d');
+      const colors = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899'];
+      charts.payment = new Chart(ctxPayPie, {
+        type: 'doughnut',
+        data: {
+          labels: data.payments.map(p => p.method),
+          datasets: [{
+            data: data.payments.map(p => p.revenue),
+            backgroundColor: colors,
+            borderColor: '#0f172a',
+            borderWidth: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '65%',
+          plugins: { legend: { display: false } }
+        }
+      });
+
+      // Payment Legend
+      const legend = document.getElementById('payment-legend');
+      legend.innerHTML = '';
+      data.payments.forEach((p, idx) => {
+        const item = document.createElement('div');
+        item.className = 'flex justify-between items-center text-xs p-2 rounded-lg bg-slate-800/50 border border-slate-800';
+        item.innerHTML = `
+          <span class="flex items-center gap-2 text-slate-300">
+            <span class="w-2.5 h-2.5 rounded-full" style="background:${colors[idx % colors.length]}"></span>
+            ${p.method}
+          </span>
+          <span class="font-bold text-white">₹${(p.revenue / 1e6).toFixed(2)}M (${p.count.toLocaleString()} txs)</span>
+        `;
+        legend.appendChild(item);
+      });
+
+      // Payment Comparison Bar
+      const ctxPayComp = document.getElementById('paymentComparisonChart').getContext('2d');
+      charts.payComp = new Chart(ctxPayComp, {
+        type: 'bar',
+        data: {
+          labels: data.payments.map(p => p.method),
+          datasets: [
+            {
+              label: 'Transaction Count',
+              data: data.payments.map(p => p.count),
+              backgroundColor: '#3b82f6',
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#94a3b8' } }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+            y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } }
+          }
+        }
+      });
+
+      // Render Pickups & Drops
+      const pList = document.getElementById('pickup-hubs-list');
+      pList.innerHTML = '';
+      Object.entries(data.top_pickups).forEach(([loc, cnt]) => {
+        const row = document.createElement('div');
+        row.className = 'flex justify-between items-center p-2 rounded-lg bg-slate-800/40 border border-slate-800';
+        row.innerHTML = `<span class="text-slate-300">${loc}</span> <span class="font-bold text-amber-400">${cnt.toLocaleString()} rides</span>`;
+        pList.appendChild(row);
+      });
+
+      const dList = document.getElementById('drop-hubs-list');
+      dList.innerHTML = '';
+      Object.entries(data.top_drops).forEach(([loc, cnt]) => {
+        const row = document.createElement('div');
+        row.className = 'flex justify-between items-center p-2 rounded-lg bg-slate-800/40 border border-slate-800';
+        row.innerHTML = `<span class="text-slate-300">${loc}</span> <span class="font-bold text-purple-400">${cnt.toLocaleString()} rides</span>`;
+        dList.appendChild(row);
+      });
+    }
+
+    // Render Cancellations
+    function renderCancellations(data) {
+      // Driver Reasons
+      const ctxDriver = document.getElementById('driverCancelChart').getContext('2d');
+      charts.driverCancel = new Chart(ctxDriver, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(data.driver_cancel),
+          datasets: [{
+            label: 'Driver Cancellations',
+            data: Object.values(data.driver_cancel),
+            backgroundColor: '#f43f5e',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+            y: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+          }
+        }
+      });
+
+      // Customer Reasons
+      const ctxCust = document.getElementById('custCancelChart').getContext('2d');
+      charts.custCancel = new Chart(ctxCust, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(data.cust_cancel),
+          datasets: [{
+            label: 'Customer Cancellations',
+            data: Object.values(data.cust_cancel),
+            backgroundColor: '#f59e0b',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } },
+            y: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+          }
+        }
+      });
+    }
+
+    // Render Ratings
+    function renderRatings(data) {
+      const ctxRatings = document.getElementById('ratingsDistChart').getContext('2d');
+      const keys = ['1', '2', '3', '4', '5'];
+      charts.ratings = new Chart(ctxRatings, {
+        type: 'bar',
+        data: {
+          labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
+          datasets: [
+            {
+              label: 'Customer Given Ratings',
+              data: keys.map(k => data.ratings_dist.customer[k] || 0),
+              backgroundColor: '#10b981',
+              borderRadius: 6
+            },
+            {
+              label: 'Driver Given Ratings',
+              data: keys.map(k => data.ratings_dist.driver[k] || 0),
+              backgroundColor: '#3b82f6',
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#94a3b8' } }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+            y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } }
+          }
+        }
+      });
+    }
+
+    // Apply Filter Functionality
+    function applyOverviewFilter() {
+      const val = document.getElementById('vehicle-filter').value;
+      if (!dashboardData) return;
+
+      if (val === 'ALL') {
+        charts.monthly.data.datasets[0].data = dashboardData.monthly.bookings;
+        charts.monthly.data.datasets[1].data = dashboardData.monthly.completed;
+      } else {
+        const veh = dashboardData.vehicles.find(v => v.vehicle === val);
+        if (veh) {
+          const ratio = veh.bookings / dashboardData.kpis.total_bookings;
+          charts.monthly.data.datasets[0].data = dashboardData.monthly.bookings.map(b => Math.round(b * ratio));
+          charts.monthly.data.datasets[1].data = dashboardData.monthly.completed.map(c => Math.round(c * ratio));
+        }
+      }
+      charts.monthly.update();
+    }
+
+    function resetOverviewFilter() {
+      document.getElementById('vehicle-filter').value = 'ALL';
+      applyOverviewFilter();
+    }
+  </script>
+</body>
+</html>
